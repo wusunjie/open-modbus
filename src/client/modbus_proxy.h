@@ -14,19 +14,21 @@ struct modbus_excep_pdu {
 	unsigned char excep_code;
 };
 
-struct modbus_rsp_handler {
+struct modbus_handler {
 	unsigned char (*rsp_received)(struct modbus_pdu *pdu);
 	unsigned char (*excep_handler)(struct modbus_excep_pdu *pdu);
 };
 
 struct modbus_proxy {
 	common_queue_t *request;
+	common_queue_t *response;
+	common_queue_t *exception;
 };
 
 extern unsigned char modbus_request_send(
 	struct modbus_proxy *proxy,
 	struct modbus_pdu *request,
-	struct modbus_rsp_handler *handler
+	struct modbus_handler *handler
 );
 
 #endif
