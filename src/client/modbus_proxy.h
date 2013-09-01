@@ -27,8 +27,7 @@ struct modbus_proxy {
 
 extern unsigned char modbus_request_send(
 	struct modbus_proxy *proxy,
-	struct modbus_pdu *request,
-);
+	struct modbus_pdu *request);
 
 extern unsigned char modbus_response_complete(struct modbus_proxy *proxy);
 

@@ -35,7 +35,7 @@ extern unsigned char modbus_response_complete(struct modbus_proxy *proxy)
 	struct modbus_request *rsp = common_head_queue(proxy->response);
 	unsigned char exp = 0;
 	if (RQ_STATUS_PENDING == rsp->status) {
-		proxy->response_complete_notify(proxy->link);
+		modbus_serial_response_complete(proxy->link);
 		common_pop_queue(rsp);
 		free(rsp);
 		rsp = common_head_queue(proxy->response);
@@ -50,8 +50,7 @@ extern unsigned char modbus_response_complete(struct modbus_proxy *proxy)
 		if (1 == proxy->rsp_received(
 			proxy->appli,
 			rsp->rq_pdu,
-			exp
-		)) {
+			exp)) {
 			rsp->status = RQ_STATUS_PENDING;
 		}
 	}
