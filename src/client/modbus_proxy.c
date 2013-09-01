@@ -15,12 +15,11 @@ static unsigned char serial_send_complete(struct modbus_proxy *proxy);
 static unsigned char serial_resp_received(
 	struct modbus_proxy *proxy,
 	struct modbus_pdu *pdu);
+
 extern unsigned char modbus_request_send(
 	struct modbus_proxy *proxy,
 	struct modbus_pdu *request,
-	unsigned char (*handler)(
-		struct modbus_appli *appli,
-		struct modbus_pdu *pdu))
+	rsp_received_cb handler)
 {
 	struct modbus_request *rq =
 		(struct modbus_request *)malloc(sizeof(*rq));
