@@ -9,11 +9,6 @@ struct modbus_pdu {
 	unsigned char count;
 };
 
-struct modbus_excep_pdu {
-	unsigned char opt;
-	unsigned char excep_code;
-};
-
 struct modbus_proxy {
 	common_queue_t *request;
 	common_queue_t *response;
