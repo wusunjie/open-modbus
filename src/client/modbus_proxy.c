@@ -1,5 +1,6 @@
 #include "modbus.h"
 #include "common_lib.h"
+#include "modbus_serial.h"
 
 enum modbus_rq_status {
 	RQ_STATUS_WAIT,
