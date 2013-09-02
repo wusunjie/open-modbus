@@ -1,5 +1,5 @@
-#ifndef _MODBUS_H
-#define _MODBUS_H
+#ifndef _MODBUS_PROXY_H
+#define _MODBUS_PROXY_H
 
 #include "common_lib.h"
 #include "modbus_serial.h"
@@ -25,10 +25,15 @@ struct modbus_proxy {
 	unsigned char (*send_complete_notify)(struct modbus_appli *appli);
 };
 
-extern unsigned char modbus_request_send(
+extern struct modbus_proxy *modbus_proxy_create(rsp_received_cb cb);
+extern unsigned char modbus_proxy_send_rq(
 	struct modbus_proxy *proxy,
 	struct modbus_pdu *request);
 
 extern unsigned char modbus_response_complete(struct modbus_proxy *proxy);
+
+extern unsigned char modbus_set_received_cb(
+	struct modbus_proxy *proxy,
+	rsp_received_cb cb);
 
 #endif

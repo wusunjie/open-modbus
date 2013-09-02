@@ -10,6 +10,7 @@ enum modbus_rq_status {
 struct modbus_request {
 	enum modbus_rq_status status;
 	struct modbus_pdu *rq_pdu;
+	common_queue_t *queue;
 };
 
 static unsigned char serial_send_complete(struct modbus_proxy *proxy);
@@ -17,16 +18,26 @@ static unsigned char serial_resp_received(
 	struct modbus_proxy *proxy,
 	struct modbus_pdu *pdu);
 
-extern unsigned char modbus_request_send(
+extern struct modbus_proxy *modbus_proxy_create(
+	struct modbus_appli *appli,
+	unsigned char (*send_complete_notify_cb)(
+		struct modbus_appli *))
+{
+	struct modbus_proxy *proxy = (struct modbus_proxy *)malloc(sizeof(*proxy));
+	proxy->appli = appli;
+	proxy->link = modbus_serial_create();
+	proxy->send_complete_notify = send_complete_notify_cb;
+	return proxy;
+}
+
+extern unsigned char modbus_proxy_send_rq(
 	struct modbus_proxy *proxy,
-	struct modbus_pdu *request,
-	rsp_received_cb handler)
+	struct modbus_pdu *request)
 {
 	struct modbus_request *rq =
 		(struct modbus_request *)malloc(sizeof(*rq));
 	rq->status = RQ_STATUS_WAIT;
 	rq->rq_pdu = request;
-	proxy->rsp_received = handler;
 	common_push_queue(proxy->request, rq);
 }
 
@@ -53,6 +64,15 @@ extern unsigned char modbus_response_complete(struct modbus_proxy *proxy)
 			exp)) {
 			rsp->status = RQ_STATUS_PENDING;
 		}
+	}
+}
+
+extern unsigned char modbus_set_received_cb(
+	struct modbus_proxy *proxy,
+	rsp_received_cb cb)
+{
+	if (cb != 0) {
+		proxy->rsp_received = cb;
 	}
 }
 
