@@ -1,5 +1,6 @@
 #include "modbus_appli.h"
 #include "modbus_proxy.h"
+#include "common_lib.h"
 
 static modbus_appli_handler *appli_handler = 0;
 
