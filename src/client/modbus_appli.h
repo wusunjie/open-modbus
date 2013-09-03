@@ -1,6 +1,8 @@
 #ifndef _MODBUS_APPLI_H
 #define _MODBUS_APPLI_H
 
+#include "modbus_proxy.h"
+
 struct modbus_appli {
 	struct modbus_proxy *proxy;
 	struct modbus_pdu *pdu_buf;
