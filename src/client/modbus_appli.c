@@ -47,7 +47,7 @@ extern unsigned char modbus_appli_read_coils(
 	struct modbus_read_coils_req *req)
 {
 	appli->pdu_buf = (struct modbus_pdu *)malloc(sizeof(*(appli->pdu_buf)));
-	appli->pdu_buf->opt = XXX;
+	appli->pdu_buf->opt = READ_COILS;
 	appli->pdu_buf->data = (unsigned char *)malloc(4);
 	appli->pdu_buf->data[0] = (unsigned char)(req->addr >> 8);
 	appli->pdu_buf->data[1] = (unsigned char)(req->addr & 0xFF);
