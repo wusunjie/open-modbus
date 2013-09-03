@@ -24,7 +24,7 @@ extern unsigned char modbus_appli_read_coils(
 	struct modbus_appli *appli,
 	struct modbus_read_coils_req *req)
 {
-	appli->pdu_buf = (struct modbus_pdu *)malloc(sizeof(*(appli->pdu)));
+	appli->pdu_buf = (struct modbus_pdu *)malloc(sizeof(*(appli->pdu_buf)));
 	appli->pdu_buf->opt = XXX;
 	appli->pdu_buf->data = (unsigned char *)malloc(4);
 	appli->pdu_buf->data[0] = (unsigned char)(req->addr >> 8);
@@ -37,7 +37,11 @@ extern unsigned char modbus_appli_read_coils(
 
 static unsigned char appli_send_complete(struct modbus_appli *appli)
 {
-
+	if (appli->pdu_buf != 0) {
+		free(appli->pdu_buf->data);
+		free(appli->pdu_buf);
+		appli->pdu_buf = 0;
+	}
 }
 
 static unsigned char appli_rsp_received(
@@ -45,5 +49,5 @@ static unsigned char appli_rsp_received(
 	struct modbus_pdu *pdu,
 	unsigned char exp)
 {
-
+	appli_handler[pdu->opt](pdu->data, pdu->count, exp);
 }

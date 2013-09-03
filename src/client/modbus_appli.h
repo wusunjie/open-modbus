@@ -3,7 +3,7 @@
 
 struct modbus_appli {
 	struct modbus_proxy *proxy;
-	unsigned char *pdu_buf;
+	struct modbus_pdu *pdu_buf;
 };
 
 struct modbus_read_coils_req {
