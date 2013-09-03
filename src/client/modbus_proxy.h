@@ -26,6 +26,7 @@ struct modbus_proxy {
 };
 
 extern struct modbus_proxy *modbus_proxy_create(rsp_received_cb cb);
+
 extern unsigned char modbus_proxy_send_rq(
 	struct modbus_proxy *proxy,
 	struct modbus_pdu *request);
