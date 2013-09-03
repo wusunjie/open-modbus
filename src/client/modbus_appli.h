@@ -11,9 +11,16 @@ struct modbus_read_coils_req {
 	unsigned short cnt;
 };
 
-typedef (*modbus_appli_handler)(unsigned char *data, unsigned char cnt);
+struct modbus_appli_handler {
+	unsigned char opt;
+	unsigned char (*rsp_received)(
+		unsigned char *data,
+		unsigned char cnt);
+	unsigned char (*exp_received)(
+		unsigned char exp_code);
+};
 
-extern struct modbus_appli *modbus_appli_create(modbus_appli_handler *handler);
+extern struct modbus_appli *modbus_appli_create(struct modbus_appli_handler *handler);
 
 extern unsigned char modbus_appli_read_coils(
 	struct modbus_appli *appli,
