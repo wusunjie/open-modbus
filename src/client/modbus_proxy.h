@@ -23,13 +23,15 @@ struct modbus_proxy {
 	struct modbus_appli *appli;
 	rsp_received_cb rsp_received;
 	unsigned char (*send_complete_notify)(struct modbus_appli *appli);
+	unsigned char slave;
 };
 
 extern struct modbus_proxy *modbus_proxy_create(rsp_received_cb cb);
 
 extern unsigned char modbus_proxy_send_rq(
 	struct modbus_proxy *proxy,
-	struct modbus_pdu *request);
+	struct modbus_pdu *request,
+	unsigned char slave);
 
 extern unsigned char modbus_response_complete(struct modbus_proxy *proxy);
 

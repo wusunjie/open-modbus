@@ -14,7 +14,7 @@ struct modbus_request {
 };
 
 static unsigned char serial_send_complete(struct modbus_proxy *proxy);
-static unsigned char serial_resp_received(
+static unsigned char serial_rsp_received(
 	struct modbus_proxy *proxy,
 	struct modbus_pdu *pdu);
 
@@ -25,19 +25,26 @@ extern struct modbus_proxy *modbus_proxy_create(
 {
 	struct modbus_proxy *proxy = (struct modbus_proxy *)malloc(sizeof(*proxy));
 	proxy->appli = appli;
-	proxy->link = modbus_serial_create();
+	proxy->link = modbus_serial_create(proxy);
 	proxy->send_complete_notify = send_complete_notify_cb;
+	proxy->slave = 0;
+	modbus_serial_set_handler(
+		proxy->link,
+		serial_send_complete,
+		serial_rsp_received);
 	return proxy;
 }
 
 extern unsigned char modbus_proxy_send_rq(
 	struct modbus_proxy *proxy,
-	struct modbus_pdu *request)
+	struct modbus_pdu *request,
+	unsigned char slave)
 {
 	struct modbus_request *rq =
 		(struct modbus_request *)malloc(sizeof(*rq));
 	rq->status = RQ_STATUS_WAIT;
 	rq->rq_pdu = request;
+	proxy->slave = slave;
 	common_push_queue(proxy->request, rq);
 }
 
@@ -87,13 +94,13 @@ static unsigned char serial_send_complete(struct modbus_proxy *proxy)
 	}
 
 	if (req != 0) {
-		if (1 == modbus_serial_send_rq(proxy->link, req->pdu)) {
+		if (1 == modbus_serial_send_rq(proxy->link, req->pdu, proxy->slave)) {
 			req->status = RQ_STATUS_PENDING;
 		}
 	}
 }
 
-static unsigned char serial_resp_received(
+static unsigned char serial_rsp_received(
 	struct modbus_proxy *proxy,
 	struct modbus_pdu *pdu)
 {
