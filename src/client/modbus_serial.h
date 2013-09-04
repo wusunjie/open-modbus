@@ -2,6 +2,7 @@
 #define _MODBUS_SERIAL_H
 
 #include "modbus_proxy.h"
+#include "modbus_com.h"
 
 struct modbus_serial {
 	unsigned char (*serial_send_complete)(
