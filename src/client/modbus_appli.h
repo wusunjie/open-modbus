@@ -22,7 +22,9 @@ struct modbus_appli_handler {
 		unsigned char exp_code);
 };
 
-extern struct modbus_appli *modbus_appli_create(struct modbus_appli_handler *handler);
+extern struct modbus_appli *modbus_appli_create(
+	struct modbus_appli_handler *handler,
+	unsigned char mode);
 
 extern unsigned char modbus_appli_read_coils(
 	struct modbus_appli *appli,

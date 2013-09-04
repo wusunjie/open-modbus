@@ -32,10 +32,14 @@ static unsigned char appli_rsp_received(
 	struct modbus_pdu *pdu,
 	unsigned char exp);
 
-extern struct modbus_appli *modbus_appli_create(struct modbus_appli_handler *table)
+extern struct modbus_appli *modbus_appli_create(
+	struct modbus_appli_handler *table,
+	unsigned char mode)
 {
 	struct modbus_appli *appli = (struct modbus_appli *)malloc(sizeof(*appli));
-	appli->proxy = modbus_proxy_create(appli, appli_send_complete);
+	appli->proxy = modbus_proxy_create(appli,
+		appli_send_complete,
+		mode);
 	appli->pdu_buf = 0;
 	modbus_set_received_cb(appli->proxy, appli_rsp_received);
 	appli_handler = table;
