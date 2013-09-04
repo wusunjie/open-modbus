@@ -37,7 +37,4 @@ extern unsigned char modbus_serial_set_handler(
 	unsigned char (*serial_rsp_received)(
 		struct modbus_proxy *proxy,
 		struct modbus_pdu *pdu))
-
-extern void modbus_serial_2ms_task(struct modbus_serial *link);
-
 #endif

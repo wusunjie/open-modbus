@@ -2,6 +2,8 @@
 #include "modbus_proxy.h"
 #include "common_lib.h"
 
+static void serial_timer_exp(void *data);
+
 extern struct modbus_serial *modbus_serial_create(
 	struct modbus_proxy *proxy,
 	unsigned char mode)
@@ -11,6 +13,7 @@ extern struct modbus_serial *modbus_serial_create(
 	link->pdu_buf = 0;
 	link->slave = 0;
 	link->com = modbus_com_create(mode);
+	link->ms = MASTER_IDLE;
 	return link;
 }
 
@@ -21,7 +24,8 @@ extern unsigned char modbus_serial_response_complete(struct modbus_serial *link)
 		free(link->pdu_rsp);
 		link->pdu_rsp = 0;
 	}
-	if (link->ms == MASTER_PROC_REPLY) {
+	if (link->ms == MASTER_PROC_REPLY
+		|| link->ms == MASTER_PROC_ERROR) {
 		link->ms = MASTER_IDLE;
 	}
 }
@@ -37,9 +41,15 @@ extern unsigned char modbus_send_rq(
 		if (slave == 0) {
 			link->turnard_timer = XXX; //[TODO:turn around time is to be determined.]
 			link->ms = MASTER_WAIT_TURNARD;
+			common_start_timer(
+				&(link->turnard_timer),
+				serial_timer_exp, link);
 		} else {
 			link->wait_timer = XXX; //[TODO:wait time is to be determined.]
 			link->ms = MASTER_WAIT_RESPONSE;
+			common_start_timer(
+				&(link->wait_timer),
+				serial_timer_exp, link);
 		}
 		link->pdu_req = pdu;
 		link->com->send_req_start(link->slave, link->pdu_req);
@@ -58,8 +68,9 @@ extern unsigned char modbus_serial_set_handler(
 	link->serial_rsp_received = serial_rsp_received;
 }
 
-extern void modbus_serial_2ms_task(struct modbus_serial *link)
+static void serial_timer_exp(void *data)
 {
+	struct modbus_serial *link = data;
 	if (link->turnard_timer != 0) {
 		link->turnard_timer++;
 		if (0 == link->turnard_timer) {
