@@ -4,6 +4,14 @@
 #include "modbus_proxy.h"
 #include "modbus_com.h"
 
+enum master_status {
+	MASTER_IDLE,
+	MASTER_PROC_REPLY,
+	MASTER_PROC_ERROR,
+	MASTER_WAIT_TURNARD,
+	MASTER_WAIT_REPLY	
+}
+
 struct modbus_serial {
 	unsigned char (*serial_send_complete)(
 		struct modbus_proxy *proxy);

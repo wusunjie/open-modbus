@@ -46,7 +46,7 @@ extern unsigned char modbus_send_rq(
 				serial_timer_exp, link);
 		} else {
 			link->wait_timer = XXX; //[TODO:wait time is to be determined.]
-			link->ms = MASTER_WAIT_RESPONSE;
+			link->ms = MASTER_WAIT_REPLY;
 			common_start_timer(
 				&(link->wait_timer),
 				serial_timer_exp, link);
