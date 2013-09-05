@@ -71,31 +71,19 @@ extern unsigned char modbus_serial_set_handler(
 static void serial_timer_exp(void *data)
 {
 	struct modbus_serial *link = data;
-	if (link->turnard_timer != 0) {
-		link->turnard_timer++;
-		if (0 == link->turnard_timer) {
-			switch (link->ms) {
-				case MASTER_WAIT_TURNARD:
-				{
-					link->ms = MASTER_IDLE;
-				}
-				break;
-				default:
-				break;
+	if (MASTER_WAIT_TURNARD == link->ms) {
+		if (link->turnard_timer != 0) {
+			link->turnard_timer++;
+			if (0 == link->turnard_timer) {
+				link->ms = MASTER_IDLE;
 			}
 		}
 	}
-	if (link->wait_timer != 0) {
-		link->wait_timer++;
-		if (0 == link->wait_timer) {
-			switch (link->ms) {
-				case MASTER_WAIT_REPLY:
-				{
-					link->ms = MASTER_PROC_ERROR;
-				}
-				break;
-				default:
-				break;
+	if (MASTER_WAIT_REPLY == link->ms) {
+		if (link->wait_timer != 0) {
+			link->wait_timer++;
+			if (0 == link->wait_timer) {
+				link->ms = MASTER_PROC_ERROR;
 			}
 		}
 	}
