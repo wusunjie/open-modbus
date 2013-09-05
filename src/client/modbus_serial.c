@@ -2,6 +2,7 @@
 #include "modbus_proxy.h"
 #include "common_lib.h"
 
+
 static void serial_timer_exp(void *data);
 
 extern struct modbus_serial *modbus_serial_create(
