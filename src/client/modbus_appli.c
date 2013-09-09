@@ -26,9 +26,9 @@ static const unsigned char READ_DEVICE_ID	= 0x43;
 static const unsigned char MODBUS_OPT_NULL	= 0xFF;
 
 
-static unsigned char appli_send_complete(struct modbus_appli *appli);
+static unsigned char appli_send_complete(void *data);
 static unsigned char appli_rsp_received(
-	struct modbus_appli *appli,
+	void *data,
 	struct modbus_pdu *pdu,
 	unsigned char exp);
 
@@ -61,8 +61,9 @@ extern unsigned char modbus_appli_read_coils(
 	modbus_proxy_send_rq(appli->proxy, appli->pdu_buf);
 }
 
-static unsigned char appli_send_complete(struct modbus_appli *appli)
+static unsigned char appli_send_complete(void *data)
 {
+	struct modbus_appli *appli = data;
 	if (appli->pdu_buf != 0) {
 		free(appli->pdu_buf->data);
 		free(appli->pdu_buf);
@@ -71,11 +72,12 @@ static unsigned char appli_send_complete(struct modbus_appli *appli)
 }
 
 static unsigned char appli_rsp_received(
-	struct modbus_appli *appli,
+	void *data,
 	struct modbus_pdu *pdu,
 	unsigned char exp)
 {
 	unsigned char i;
+	struct modbus_appli *appli = data;
 	for (i = 0; appli_handler[i].opt != MODBUS_OPT_NULL; i++) {
 		if (appli_handler[i].opt == pdu->opt) {
 			break;
