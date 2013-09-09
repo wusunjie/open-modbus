@@ -19,7 +19,7 @@ struct modbus_serial {
 		struct modbus_proxy *proxy,
 		struct modbus_pdu *pdu);
 	struct modbus_com *com;
-	struct modbus_proxy *proxy;
+	void *proxy;
 	struct modbus_pdu *pdu_rsp;
 	struct modbus_pdu *pdu_req;
 	unsigned char slave;
@@ -29,7 +29,7 @@ struct modbus_serial {
 };
 
 extern struct modbus_serial *modbus_serial_create(
-	struct modbus_proxy *proxy,
+	void *proxy,
 	unsigned char mode);
 
 extern unsigned char modbus_serial_response_complete(struct modbus_serial *link);
@@ -41,8 +41,8 @@ extern unsigned char modbus_serial_send_rq(
 
 extern unsigned char modbus_serial_set_handler(
 	unsigned char (*serial_send_complete)(
-		struct modbus_proxy *proxy),
+		void *proxy),
 	unsigned char (*serial_rsp_received)(
-		struct modbus_proxy *proxy,
+		void *proxy,
 		struct modbus_pdu *pdu))
 #endif

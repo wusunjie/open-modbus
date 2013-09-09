@@ -1,4 +1,3 @@
-#include "modbus.h"
 #include "common_lib.h"
 #include "modbus_serial.h"
 
@@ -19,9 +18,9 @@ static unsigned char serial_rsp_received(
 	struct modbus_pdu *pdu);
 
 extern struct modbus_proxy *modbus_proxy_create(
-	struct modbus_appli *appli,
+	void *appli,
 	unsigned char (*send_complete_notify_cb)(
-		struct modbus_appli *))
+		void *))
 {
 	struct modbus_proxy *proxy = (struct modbus_proxy *)malloc(sizeof(*proxy));
 	proxy->appli = appli;
