@@ -12,7 +12,8 @@ struct modbus_pdu {
 
 typedef (*rsp_received_cb)(
 	void *appli,
-	struct modbus_pdu *pdu,
+	unsigned char *pdu,
+	unsigned char pdu_cnt,
 	unsigned char exp);
 
 struct modbus_proxy {

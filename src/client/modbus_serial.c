@@ -37,13 +37,17 @@ extern unsigned char modbus_serial_response_complete(struct modbus_serial *link)
 	}
 }
 
-extern unsigned char modbus_send_rq(
+extern unsigned char modbus_serial_send_rq(
 	struct modbus_serial *link,
-	struct modbus_pdu *pdu,
+	unsigned char pdu_opt,
+	unsigned char *pdu_data,
+	unsigned char pdu_cnt,
 	unsigned char slave)
 {
 	if (link->ms == MASTER_IDLE) {
-		link->pdu_req = pdu;	
+		link->pdu_req_opt = pdu_opt;
+		link->pdu_req = pdu_data;
+		link->pdu_req_cnt = pdu_cnt;
 		link->slave = slave;
 		if (slave == 0) {
 			link->turnard_timer = XXX; //[TODO:turn around time is to be determined.]
@@ -58,11 +62,12 @@ extern unsigned char modbus_send_rq(
 				&(link->wait_timer),
 				serial_timer_exp, link);
 		}
-		link->pdu_req = pdu;
 		serial_send_req_start(
 			link->com,
 			link->slave,
-			link->pdu_req);
+			link->pdu_req_opt,
+			link->pdu_req,
+			link->pdu_req_cnt);
 	}
 }
 
@@ -72,7 +77,8 @@ extern unsigned char modbus_serial_set_handler(
 		void *proxy),
 	unsigned char (*serial_rsp_received)(
 		void *proxy,
-		struct modbus_pdu *pdu))
+		unsigned char *pdu,
+		unsigned char cnt))
 {
 	link->serial_send_complete = serial_send_complete;
 	link->serial_rsp_received = serial_rsp_received;
@@ -108,17 +114,15 @@ static unsigned char serial_rsp_received(void *com,
 		if (0 == cnt) {
 			link->ms = MASTER_PROC_ERROR;
 		} else {
-			struct modbus_pdu *pdu =
-				(struct modbus_pdu *)malloc(sizeof(*pdu));
 			if (link->slave == data[0]) {
-				pdu->opt = data[1];
-				pdu->data = data + 2;
-				pdu->count = cnt - 4;
+				link->pdu_rsp = data + 1;
+				link->pdu_rsp_cnt = cnt - 4;
 				link->wait_timer = 0;
 				link->ms = MASTER_PROC_REPLY;
 				link->serial_rsp_received(
 					link->proxy,
-					pdu);
+					link->pdu_rsp,
+					link->pdu_rsp_cnt);
 			}
 		}
 	}

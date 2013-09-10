@@ -1,7 +1,6 @@
 #ifndef _MODBUS_SERIAL_H
 #define _MODBUS_SERIAL_H
 
-#include "modbus_proxy.h"
 #include "modbus_com.h"
 
 enum master_status {
@@ -17,11 +16,15 @@ struct modbus_serial {
 		struct modbus_proxy *proxy);
 	unsigned char (*serial_rsp_received)(
 		struct modbus_proxy *proxy,
-		struct modbus_pdu *pdu);
+		unsigned char *pdu,
+		unsigned char cnt);
 	struct modbus_com *com;
 	void *proxy;
-	struct modbus_pdu *pdu_rsp;
-	struct modbus_pdu *pdu_req;
+	unsigned char *pdu_rsp;
+	unsigned char pdu_rsp_cnt;
+	unsigned char pdu_req_opt;
+	unsigned char *pdu_req;
+	unsigned char pdu_req_cnt;
 	unsigned char slave;
 	enum master_status ms;
 	unsigned int turnard_timer;
@@ -36,7 +39,9 @@ extern unsigned char modbus_serial_response_complete(struct modbus_serial *link)
 
 extern unsigned char modbus_serial_send_rq(
 	struct modbus_serial *link,
-	struct modbus_pdu *pdu,
+	unsigned char pdu_opt,
+	unsigned char *pdu_data,
+	unsigned char pdu_cnt,
 	unsigned char slave);
 
 extern unsigned char modbus_serial_set_handler(
@@ -44,5 +49,6 @@ extern unsigned char modbus_serial_set_handler(
 		void *proxy),
 	unsigned char (*serial_rsp_received)(
 		void *proxy,
-		struct modbus_pdu *pdu))
+		unsigned char *pdu,
+		unsigned char cnt))
 #endif
