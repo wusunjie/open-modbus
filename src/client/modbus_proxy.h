@@ -1,6 +1,7 @@
 #ifndef _MODBUS_PROXY_H
 #define _MODBUS_PROXY_H
 
+
 #include "common_lib.h"
 #include "modbus_serial.h"
 
